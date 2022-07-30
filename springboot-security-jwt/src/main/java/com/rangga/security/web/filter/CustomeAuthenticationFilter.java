@@ -43,6 +43,9 @@ import lombok.extern.slf4j.Slf4j;
 public class CustomeAuthenticationFilter extends UsernamePasswordAuthenticationFilter{
 	private final AuthenticationManager authenticationManager;
 	
+	public String accessToken;
+	public String refreshToken;
+	
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
 			throws AuthenticationException {
@@ -75,11 +78,21 @@ public class CustomeAuthenticationFilter extends UsernamePasswordAuthenticationF
 				.withExpiresAt(new Date(System.currentTimeMillis() + 30 * 60 * 1000))
 				.withIssuer(request.getRequestURL().toString())
 				.sign(algorithm);
+		this.accessToken = access_token;
+		this.refreshToken = refresh_token;
 		Map<String, String> tokens = new HashMap<>();
 		tokens.put("access_token", access_token);
 		tokens.put("refresh_token", refresh_token);
 		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 		new ObjectMapper().writeValue(response.getOutputStream(), tokens);
+	}
+	
+	public String getAccessToken() {
+		return this.accessToken;
+	}
+	
+	public String getRefreshToken() {
+		return this.refreshToken;
 	}
 
 	

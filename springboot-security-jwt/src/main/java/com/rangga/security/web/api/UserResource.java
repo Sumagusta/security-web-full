@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -40,6 +41,7 @@ import com.auth0.jwt.interfaces.JWTVerifier;
 import com.fasterxml.jackson.core.exc.StreamWriteException;
 import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rangga.security.web.filter.CustomeAuthenticationFilter;
 import com.rangga.security.web.model.Role;
 import com.rangga.security.web.model.User;
 import com.rangga.security.web.service.UserService;
@@ -59,6 +61,9 @@ import lombok.RequiredArgsConstructor;
 public class UserResource {
 
 	private final UserService userService;
+	
+	private CustomeAuthenticationFilter customeAuthenticationFilter;
+	
 	
 	@GetMapping("/users")
 	public ResponseEntity<List<User>> getUsers(){
@@ -89,7 +94,7 @@ public class UserResource {
 
 	@GetMapping("/token/refresh")
 	public void resfreshToken (HttpServletRequest request, HttpServletResponse response) throws StreamWriteException, DatabindException, IOException{
-		String authorizationHeader = request.getHeader(AUTHORIZATION);
+		String authorizationHeader = request.getHeader(AUTHORIZATION); //customeAuthenticationFilter.getRefreshToken()
 		if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
 			try {
 				String refresh_token = authorizationHeader.substring("Bearer ".length());

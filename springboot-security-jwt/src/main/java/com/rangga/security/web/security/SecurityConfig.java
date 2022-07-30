@@ -16,6 +16,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import com.rangga.security.web.filter.CustomeAuthenticationFilter;
 import com.rangga.security.web.filter.CustomeAuthorizationFilter;
@@ -49,15 +50,22 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 		CustomeAuthenticationFilter customeAuthenticationFilter = new CustomeAuthenticationFilter(authenticationManagerBean());
 		customeAuthenticationFilter.setFilterProcessesUrl("/api/login");
-		http.csrf().disable();
+		http.csrf().disable()
+		.authorizeRequests().antMatchers("/page/login").permitAll();
+		
 		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 		
-		http.authorizeRequests().antMatchers("/api/login/**", "/token/refresh/**").permitAll();
+		http.authorizeRequests().antMatchers("/api/login/**", "/api/token/refresh/**").permitAll();
 		http.authorizeRequests().antMatchers(HttpMethod.GET, "/api/user/**").hasAnyAuthority("ROLE_USER");
 		http.authorizeRequests().antMatchers(HttpMethod.POST, "/api/user/save/**").hasAnyAuthority("ROLE_ADMIN");
 		http.authorizeRequests().anyRequest().authenticated();
 		http.addFilter(customeAuthenticationFilter);
 		http.addFilterBefore(new CustomeAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
+		
+		http.logout().invalidateHttpSession(true)
+		.clearAuthentication(true)
+		.logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+		.logoutSuccessUrl("/page/login").permitAll();
 	}
 
 	@Override
