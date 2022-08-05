@@ -16,7 +16,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -25,10 +28,12 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.stereotype.Component;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rangga.security.web.model.submission.TokenShare;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,12 +44,13 @@ import lombok.extern.slf4j.Slf4j;
  * @since Jul 29, 2022
  */
 @Slf4j
-@RequiredArgsConstructor
+@RequiredArgsConstructor	
 public class CustomeAuthenticationFilter extends UsernamePasswordAuthenticationFilter{
+	
 	private final AuthenticationManager authenticationManager;
 	
-	public String accessToken;
-	public String refreshToken;
+	@Autowired
+	TokenShare tokenShare;
 	
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
@@ -78,8 +84,8 @@ public class CustomeAuthenticationFilter extends UsernamePasswordAuthenticationF
 				.withExpiresAt(new Date(System.currentTimeMillis() + 30 * 60 * 1000))
 				.withIssuer(request.getRequestURL().toString())
 				.sign(algorithm);
-		this.accessToken = access_token;
-		this.refreshToken = refresh_token;
+		tokenShare.setGetAccessToken(access_token);
+		tokenShare.setGetRefreshToken(refresh_token);
 		Map<String, String> tokens = new HashMap<>();
 		tokens.put("access_token", access_token);
 		tokens.put("refresh_token", refresh_token);
@@ -87,13 +93,6 @@ public class CustomeAuthenticationFilter extends UsernamePasswordAuthenticationF
 		new ObjectMapper().writeValue(response.getOutputStream(), tokens);
 	}
 	
-	public String getAccessToken() {
-		return this.accessToken;
-	}
-	
-	public String getRefreshToken() {
-		return this.refreshToken;
-	}
 
 	
 }

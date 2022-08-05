@@ -44,6 +44,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rangga.security.web.filter.CustomeAuthenticationFilter;
 import com.rangga.security.web.model.Role;
 import com.rangga.security.web.model.User;
+import com.rangga.security.web.model.submission.TokenShare;
 import com.rangga.security.web.service.UserService;
 
 import lombok.Data;
@@ -61,8 +62,6 @@ import lombok.RequiredArgsConstructor;
 public class UserResource {
 
 	private final UserService userService;
-	
-	private CustomeAuthenticationFilter customeAuthenticationFilter;
 	
 	
 	@GetMapping("/users")
@@ -94,7 +93,8 @@ public class UserResource {
 
 	@GetMapping("/token/refresh")
 	public void resfreshToken (HttpServletRequest request, HttpServletResponse response) throws StreamWriteException, DatabindException, IOException{
-		String authorizationHeader = request.getHeader(AUTHORIZATION); //customeAuthenticationFilter.getRefreshToken()
+		TokenShare getRefresh = new TokenShare();
+		String authorizationHeader =  getRefresh.getGetRefreshToken(); // request.getHeader(AUTHORIZATION);
 		if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
 			try {
 				String refresh_token = authorizationHeader.substring("Bearer ".length());
