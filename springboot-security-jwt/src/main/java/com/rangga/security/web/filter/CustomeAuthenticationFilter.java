@@ -29,11 +29,11 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.rangga.security.web.model.submission.TokenShare;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -44,13 +44,15 @@ import lombok.extern.slf4j.Slf4j;
  * @since Jul 29, 2022
  */
 @Slf4j
-@RequiredArgsConstructor	
+@RequiredArgsConstructor
 public class CustomeAuthenticationFilter extends UsernamePasswordAuthenticationFilter{
 	
 	private final AuthenticationManager authenticationManager;
 	
-	@Autowired
-	TokenShare tokenShare;
+	@Override
+	public void setAuthenticationManager(AuthenticationManager authenticationManager) {
+	    super.setAuthenticationManager(authenticationManager);
+	}
 	
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
@@ -84,15 +86,11 @@ public class CustomeAuthenticationFilter extends UsernamePasswordAuthenticationF
 				.withExpiresAt(new Date(System.currentTimeMillis() + 30 * 60 * 1000))
 				.withIssuer(request.getRequestURL().toString())
 				.sign(algorithm);
-		tokenShare.setGetAccessToken(access_token);
-		tokenShare.setGetRefreshToken(refresh_token);
 		Map<String, String> tokens = new HashMap<>();
 		tokens.put("access_token", access_token);
 		tokens.put("refresh_token", refresh_token);
 		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 		new ObjectMapper().writeValue(response.getOutputStream(), tokens);
 	}
-	
-
 	
 }

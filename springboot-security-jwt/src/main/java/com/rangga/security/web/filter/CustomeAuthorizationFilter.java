@@ -34,9 +34,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.JWTVerifier;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.rangga.security.web.model.submission.TokenShare;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -46,22 +44,18 @@ import lombok.extern.slf4j.Slf4j;
  */
 
 @Slf4j
-@Component
 public class CustomeAuthorizationFilter extends OncePerRequestFilter {
-	
-	@Autowired
-	private TokenShare tokenShare;
 	
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		
-		if (request.getServletPath().equals("/api/login") || request.getServletPath().equals("/api/token/refresh") || request.getServletPath().equals("/page/login")) {
+		if (request.getServletPath().equals("/api/login") || request.getServletPath().equals("/api/token/refresh")) {
 			filterChain.doFilter(request, response);
 		} else {
 			try {
-				String authorizationHeader = "Bearer "+ tokenShare.getGetAccessToken(); //request.getHeader(AUTHORIZATION);
+				String authorizationHeader = "Bearer "+request.getHeader(AUTHORIZATION);
 				if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
 					try {
 						String token = authorizationHeader.substring("Bearer ".length());
