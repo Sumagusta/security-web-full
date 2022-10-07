@@ -41,7 +41,6 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * @author ryo rangga sumagusta
  * 
- * @since Jul 29, 2022
  */
 @Slf4j
 @RequiredArgsConstructor

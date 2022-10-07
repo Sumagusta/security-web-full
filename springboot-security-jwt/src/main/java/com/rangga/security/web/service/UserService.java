@@ -11,7 +11,6 @@ import com.rangga.security.web.model.User;
 /**
  * @author ryo rangga sumagusta
  * 
- * @since Jul 28, 2022
  */
 public interface UserService {
 	User saveUser(User user);

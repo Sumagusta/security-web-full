@@ -5,6 +5,7 @@ package com.rangga.security.web.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -26,11 +27,11 @@ import lombok.RequiredArgsConstructor;
 /**
  * @author ryo rangga sumagusta
  * 
- * @since Jul 28, 2022
  */
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
+@Order(1)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	private final UserDetailsService userDetailService;

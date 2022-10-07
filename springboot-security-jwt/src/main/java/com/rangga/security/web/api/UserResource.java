@@ -52,7 +52,6 @@ import lombok.RequiredArgsConstructor;
 /**
  * @author ryo rangga sumagusta
  * 
- * @since Jul 28, 2022
  */
 
 @RestController
